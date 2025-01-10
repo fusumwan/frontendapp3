@@ -1,0 +1,32 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login Dockerhub
+      env:
+        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      #run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD   
+
+    - name: Build the Frontend Docker image
+      run: docker build -t timothyfudocker/frontendapp3:latest -f ./frontendapp3/Dockerfile .
+
+    - name: Tag the Docker image with v1.00
+      run: docker tag timothyfudocker/frontendapp3:latest timothyfudocker/frontendapp3:v1.00
+
+    - name: Push Frontend Docker image to Dockerhub
+      run: docker push timothyfudocker/frontendapp3:latest
+
+    - name: Push the Docker image (v1.00 tag)
+      run: docker push timothyfudocker/frontendapp3:v1.00

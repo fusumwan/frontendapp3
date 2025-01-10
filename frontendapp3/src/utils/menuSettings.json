@@ -1,0 +1,127 @@
+[
+    {
+        "id": "sticky_header_menu_01",
+        "type": "sticky_header_menu",
+        "parent":"HeaderComponent",
+        "absolute_path":"hoc/Nav/Menu/StickyHeaderMenuComponent",
+        "options": [
+            {
+                "root_id": "root",
+                "child_id": "home",
+                "title": "Home",
+                "type": "root",
+                "login_required": false,
+                "absolute_path": "components/pages/home/HomeComponent",
+                "role": [
+                    "Guest",
+                    "User",
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                ]
+            },
+            {
+                "root_id": "root",
+                "child_id": "account",
+                "title": "Account",
+                "type": "root",
+                "login_required": false,
+                "absolute_path": "components/pages/account/AccountComponent",
+                "role": [
+                    "Guest",
+                    "User",
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                ]
+            },
+            {
+                "root_id": "root",
+                "child_id": "service",
+                "title": "Service",
+                "type": "root",
+                "login_required": true,
+                "absolute_path": "components/pages/service/ServiceComponent",
+                "role": [
+                    "User",
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "ai_services"
+                ]
+            },
+            {
+                "root_id": "account",
+                "child_id": "login",
+                "title": "Login",
+                "type": "child",
+                "login_required": false,
+                "absolute_path": "components/pages/account/login/LoginComponent",
+                "role": [
+                    "Guest",
+                    "User",
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "authenticate_user_credentials",
+                    "redirect_logged_in_users"
+                ]
+            },
+            {
+                "root_id": "account",
+                "child_id": "logout",
+                "title": "Logout",
+                "type": "child",
+                "login_required": true,
+                "absolute_path": "components/pages/account/logout/LogoutComponent",
+                "role": [
+                    "Guest",
+                    "User",
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "authenticate_user_credentials",
+                    "redirect_logged_in_users"
+                ]
+            },
+            {
+                "root_id": "account",
+                "child_id": "register",
+                "title": "Register Page",
+                "type": "child",
+                "login_required": false,
+                "absolute_path": "components/pages/account/register/RegisterComponent",
+                "role": [
+                    "Guest",
+                    "Admin"
+                ],
+                "permissions": [
+                    "register_new_accounts",
+                    "assign_roles_during_registration"
+                ]            
+            },
+            {
+                "root_id": "account",
+                "child_id": "usermanagement",
+                "title": "User Management",
+                "type": "child",
+                "login_required": true,
+                "absolute_path": "components/pages/account/usermanagement/UsermanagementComponent",
+                "role": [
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "add_edit_delete_users",
+                    "assign_roles_permissions",
+                    "view_user_details"
+                ]
+            }
+        ]
+    }
+]
