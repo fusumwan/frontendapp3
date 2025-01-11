@@ -95,5 +95,5 @@ class AppDTOManager {
     }
   }
   
-  export default AppDTOManager.getInstance();
+  export default AppDTOManager;
   

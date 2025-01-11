@@ -93,6 +93,26 @@ git reset --hard
 
 git pull origin main
 
+==============================
+
+cd C:\gcp\docker\frontendapp3\frontendapp3\frontendapp3
+Step 3: Clean and Reinstall Dependencies
+If the problem persists, clear your node_modules and reinstall all dependencies:
+
+rm -rf node_modules package-lock.json
+
+npm install
+============PowerShell=============
+
+Remove-Item -Recurse -Force node_modules
+
+Remove-Item -Force package-lock.json
+
+Alternative (One-Liner Command)
+You can combine the two commands into a one-liner:
+
+Remove-Item -Recurse -Force node_modules; Remove-Item -Force package-lock.json; npm install
+
 
 
 ==================================
@@ -123,4 +143,4 @@ git fetch origin && git reset --hard origin/main && git pull --force origin main
 
 =========================================
 below is container image url
-docker.io/timothyfudocker/frontendapp:3
+docker.io/timothyfudocker/frontendapp:v1.01

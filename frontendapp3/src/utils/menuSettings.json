@@ -121,6 +121,36 @@
                     "assign_roles_permissions",
                     "view_user_details"
                 ]
+            },
+            {
+                "root_id": "service",
+                "child_id": "translationrecordcreationComponent",
+                "title": "Record Creation",
+                "type": "child",
+                "login_required": true,
+                "absolute_path": "components/pages/service/TranslationRecordCreationComponent",
+                "role": [
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "add_record"
+                ]
+            },
+            {
+                "root_id": "service",
+                "child_id": "translationRecordmanagementComponent",
+                "title": "Record Management",
+                "type": "child",
+                "login_required": true,
+                "absolute_path": "components/pages/service/TranslationRecordManagementComponent",
+                "role": [
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "add_record"
+                ]
             }
         ]
     }
