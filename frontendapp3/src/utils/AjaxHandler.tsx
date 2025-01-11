@@ -27,15 +27,22 @@ export class AjaxHandler {
 
   public getDomain(): string {
     const currentUrl = window.location.href;
+    const REACT_APP_FRONTEND_PRO_API_URL=process.env.REACT_APP_FRONTEND_PRO_API_URL;
+    const REACT_APP_FRONTEND_PRO_API_PORT=process.env.REACT_APP_FRONTEND_PRO_API_PORT;
+    const REACT_APP_FRONTEND_DEV_API_URL=process.env.REACT_APP_FRONTEND_DEV_API_URL;
+    const REACT_APP_FRONTEND_DEV_API_PORT=process.env.REACT_APP_FRONTEND_DEV_API_PORT;
+    
+    const REACT_APP_BACKEND_PRO_API_URL=process.env.REACT_APP_BACKEND_PRO_API_URL;
+    const REACT_APP_BACKEND_PRO_API_PORT=process.env.REACT_APP_BACKEND_PRO_API_PORT;
+    const REACT_APP_BACKEND_DEV_API_URL=process.env.REACT_APP_BACKEND_DEV_API_URL;
+    const REACT_APP_BACKEND_DEV_API_PORT=process.env.REACT_APP_BACKEND_DEV_API_PORT;
+
     const isProduction = Boolean(
-        process.env.REACT_APP_FRONTEND_PRO_API_URL && 
-        currentUrl.includes(process.env.REACT_APP_FRONTEND_PRO_API_URL)
+      REACT_APP_FRONTEND_PRO_API_URL && 
+        (currentUrl.includes(REACT_APP_FRONTEND_PRO_API_URL) || currentUrl==REACT_APP_FRONTEND_PRO_API_URL)
     );
 
-    const REACT_APP_BACKEND_PRO_API_URL=process.env.REACT_APP_BACKEND_PRO_API_URL;
-    const REACT_APP_BACKEND_DEV_API_URL=process.env.REACT_APP_BACKEND_DEV_API_URL;
-    const REACT_APP_BACKEND_PRO_API_PORT=process.env.REACT_APP_BACKEND_PRO_API_PORT;
-    const REACT_APP_BACKEND_DEV_API_PORT=process.env.REACT_APP_BACKEND_DEV_API_PORT;
+
 
     const protocol = process.env.REACT_APP_IS_HTTPS === 'true' ? 'https' : 'http';
     const domain = isProduction
