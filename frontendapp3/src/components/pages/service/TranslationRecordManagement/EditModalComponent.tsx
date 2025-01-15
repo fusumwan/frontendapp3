@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import Modal from "../../shared/Modal";
-import Input from "../../shared/Input";
-import Button from "../../shared/Button";
-import { TranslationRecord } from "../../../interfaces/ComponentProps/TranslationRecord";
-
+import Modal from "../../../shared/Modal";
+import Input from "../../../shared/Input";
+import Button from "../../../shared/Button";
+import Datepicker from "../../../shared/Datepicker";
+import { TranslationRecord } from "../../../../interfaces/ComponentProps/TranslationRecord";
 
 interface EditModalComponentProps {
   record: TranslationRecord;
-  onClose: () => void;
+  onCancel: () => void;
   onSave: (updatedRecord: TranslationRecord) => void;
 }
 
 const EditModalComponent: React.FC<EditModalComponentProps> = ({
   record,
-  onClose,
+  onCancel,
   onSave,
 }) => {
   const [formData, setFormData] = useState<TranslationRecord>({ ...record });
@@ -25,63 +25,95 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
   };
 
   const handleSave = () => {
-    const { day, original_text, from_lang, translated_text, to_lang } = formData;
-    if (!day || !original_text || !from_lang || !translated_text || !to_lang) {
+    const {
+      originalText,
+      fromLanguage,
+      translatedText,
+      toLanguage,
+      dayUtc,
+    } = formData;
+
+    if (!originalText || !fromLanguage || !translatedText || !toLanguage || !dayUtc) {
       setErrorMessage("All fields are required. Please fill in the missing information.");
       return;
     }
     onSave(formData);
-    onClose();
+    onCancel();
   };
 
   return (
     <Modal
       title="Edit Translation Record"
       isOpen={true}
-      onClose={onClose}
+      onClose={onCancel}
     >
       <div>
         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
+        
         <Input
-          label="Day (UTC)"
-          name="day"
-          value={formData.day}
+          label=""
+          name="id"
+          value={formData.id}
           onChange={handleChange}
-          placeholder="Enter day in UTC format"
+          type="hidden"
         />
+
         <Input
           label="Original Text"
-          name="original_text"
-          value={formData.original_text}
+          name="originalText"
+          value={formData.originalText}
           onChange={handleChange}
           placeholder="Enter the original text"
+          
         />
         <Input
-          label="Source Language (from_lang)"
-          name="from_lang"
-          value={formData.from_lang}
+          label="Source Language"
+          name="fromLanguage"
+          value={formData.fromLanguage}
           onChange={handleChange}
           placeholder="Enter source language code"
         />
         <Input
           label="Translated Text"
-          name="translated_text"
-          value={formData.translated_text}
+          name="translatedText"
+          value={formData.translatedText}
           onChange={handleChange}
           placeholder="Enter the translated text"
         />
         <Input
-          label="Target Language (to_lang)"
-          name="to_lang"
-          value={formData.to_lang}
+          label="Target Language"
+          name="toLanguage"
+          value={formData.toLanguage}
           onChange={handleChange}
           placeholder="Enter target language code"
+        />
+        <Datepicker
+          label="Day (UTC)"
+          name="dayUtc"
+          value={formData.dayUtc}
+          onChange={handleChange}
+          pattern="YYYY-MM-DD"
+        />
+        <Datepicker
+          label="Created At (UTC)"
+          name="createdAtUtc"
+          value={formData.createdAtUtc || ""}
+          onChange={handleChange}
+          pattern="YYYY-MM-DDTHH:mm:ss"
+        />
+        <Input
+          label=""
+          name="createdByUserId"
+          value={formData.createdByUserId || ""}
+          onChange={handleChange}
+          placeholder="Enter creator user ID (optional)"
+          type="hidden"
         />
         <div className="flex gap-4 mt-4">
           <Button variant="primary" onClick={handleSave}>
             Save
           </Button>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onCancel}>
             Cancel
           </Button>
         </div>

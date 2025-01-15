@@ -143,7 +143,7 @@
                 "title": "Record Management",
                 "type": "child",
                 "login_required": true,
-                "absolute_path": "components/pages/service/TranslationRecordManagementComponent",
+                "absolute_path": "components/pages/service/TranslationRecordManagement/TranslationRecordManagementComponent",
                 "role": [
                     "Manager",
                     "Admin"

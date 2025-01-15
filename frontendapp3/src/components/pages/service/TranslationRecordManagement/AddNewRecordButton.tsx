@@ -1,5 +1,5 @@
 import React from 'react';
-import IncludeComponent from '../../layout/include/IncludeComponent';
+import IncludeComponent from '../../../layout/include/IncludeComponent';
 
 /*
 AddNewRecordButton

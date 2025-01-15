@@ -11,7 +11,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { format } from "date-fns";
-import { AjaxHandler, AjaxConfig } from "../../../utils/AjaxHandler";
+import { AjaxHandler, AjaxConfig } from "../../../../utils/AjaxHandler";
 
 const TranslationRecordCreationComponent: React.FC = () => {
   const [date, setDate] = useState<Date | null>(null);
@@ -28,7 +28,7 @@ const TranslationRecordCreationComponent: React.FC = () => {
     // Format dates to match backend requirements
     const formattedDate = format(date, "yyyy-MM-dd");
     const formattedDatetime = format(datetime, "yyyy-MM-dd'T'HH:mm:ss");
-
+    
     const requestData = {
       OriginalText: text,
       FromLanguage: language,

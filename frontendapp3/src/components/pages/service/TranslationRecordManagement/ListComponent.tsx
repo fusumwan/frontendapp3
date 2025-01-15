@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../shared/Table";
+import Table from "../../../shared/Table";
 import PaginationComponent from "./PaginationComponent";
 import EditModalComponent from "./EditModalComponent";
 import ConfirmationDialogComponent from "./ConfirmationDialogComponent";
-import { AjaxHandler } from "../../../utils/AjaxHandler";
-import AppDTOManager from "../../../utils/AppDTOManager";
-import { TranslationRecord } from "../../../interfaces/ComponentProps/TranslationRecord";
-import { ComponentProps } from '../../../interfaces/ComponentProps';
+import { AjaxHandler } from "../../../../utils/AjaxHandler";
+import AppDTOManager from "../../../../utils/AppDTOManager";
+import { TranslationRecord } from "../../../../interfaces/ComponentProps/TranslationRecord";
+import { ComponentProps } from '../../../../interfaces/ComponentProps';
 
-
-const ListComponent: React.FC<ComponentProps> = ({appContent}) => {
+const ListComponent: React.FC<ComponentProps> = ({ appContent }) => {
   const [records, setRecords] = useState<TranslationRecord[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -19,8 +18,8 @@ const ListComponent: React.FC<ComponentProps> = ({appContent}) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const domain = AjaxHandler.getInstance().getDomain();
-  const email=appContent?.applicationUserDataSetting.applicationUserData.userProfile.email;
-  const token=appContent?.applicationUserDataSetting.applicationUserData.authToken.accessToken;
+  const email = appContent?.applicationUserDataSetting.applicationUserData.userProfile.email;
+  const token = appContent?.applicationUserDataSetting.applicationUserData.authToken.accessToken;
   
   const fetchRecords = async () => {
     const ajaxConfig = {
@@ -56,7 +55,7 @@ const ListComponent: React.FC<ComponentProps> = ({appContent}) => {
 
   const confirmDelete = async () => {
     if (!selectedRecord) return;
-    
+
     const ajaxConfig = {
       url: `${domain}/api/records/${selectedRecord.id}`,
       method: "DELETE" as "DELETE",
@@ -93,11 +92,13 @@ const ListComponent: React.FC<ComponentProps> = ({appContent}) => {
       <Table
         data={records}
         columns={[
-          { label: "Original Text", key: "original_text" },
-          { label: "From Language", key: "from_lang" },
-          { label: "Translated Text", key: "translated_text" },
-          { label: "To Language", key: "to_lang" },
-          { label: "Day (UTC)", key: "day" },
+          { label: "Original Text", key: "originalText" },
+          { label: "From Language", key: "fromLanguage" },
+          { label: "Translated Text", key: "translatedText" },
+          { label: "To Language", key: "toLanguage" },
+          { label: "Day (UTC)", key: "dayUtc" },
+          { label: "Created At (UTC)", key: "createdAtUtc" },
+          { label: "Created By User ID", key: "createdByUserId" },
           {
             label: "Actions",
             key: "id",
@@ -130,7 +131,7 @@ const ListComponent: React.FC<ComponentProps> = ({appContent}) => {
       {showEditModal && selectedRecord && (
         <EditModalComponent
           record={selectedRecord}
-          onClose={() => setShowEditModal(false)}
+          onCancel={() => setShowEditModal(false)}
           onSave={(updatedRecord) => {
             setShowEditModal(false);
             setRecords((prevRecords) =>
