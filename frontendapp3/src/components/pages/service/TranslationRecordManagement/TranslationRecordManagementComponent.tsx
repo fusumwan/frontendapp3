@@ -9,7 +9,32 @@ import EditModalComponent from './EditModalComponent';
 import { ComponentProps } from '../../../../interfaces/ComponentProps';
 import { DateTime } from 'luxon';
 import { format } from 'path';
+import { ColumnDefinition as TabulatorColumnDefinition } from 'react-tabulator';
 
+type ColumnDefinition = TabulatorColumnDefinition;
+
+// Define the type for datasource_columns
+interface DataSourceColumn {
+  title: string;
+  field: string;
+  sorter?: "string" | "number";
+  value?: string;
+  mode: {
+    [key: string]: {
+      visible: boolean;
+      required?: boolean;
+      type?: {
+        component: string;
+        type: string;
+        dataSource?: any[];
+        dataTextField?: string;
+        dataTextValue?: string;
+        pattern?: string;
+        value?: string;
+      };
+    };
+  };
+}
 const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appContent }) => {
   const [rowData, setRowData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,9 +51,10 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
 
   // Authentication/domain info
   const domain = AjaxHandler.getInstance().getDomain();
+  const userId = appContent?.applicationUserDataSetting.applicationUserData.userProfile.id;
   const email = appContent?.applicationUserDataSetting.applicationUserData.userProfile.email;
   const token = appContent?.applicationUserDataSetting.applicationUserData.authToken.accessToken;
- 
+
   const resizeHandler = debounce(() => {
     console.log('Resize handled!');
   }, 200);
@@ -37,7 +63,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     window.addEventListener('resize', resizeHandler);
     return () => window.removeEventListener('resize', resizeHandler);
   }, []);
-  
+
   useEffect(() => {
     const handleResizeObserverError = (e: ErrorEvent) => {
       // If this is the "ResizeObserver loop limit exceeded" type error, ignore it
@@ -46,13 +72,13 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         e.preventDefault();
       }
     };
-  
+
     window.addEventListener('error', handleResizeObserverError);
     return () => {
       window.removeEventListener('error', handleResizeObserverError);
     };
   }, []);
-  
+
   // Fetch total record count on component mount
   useEffect(() => {
     fetchTranslationRecordCount();
@@ -67,17 +93,19 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
   const handleAddNewRecord = () => {
     // Alternatively, define manually if no DTOManager
     const newRecordManual = {
-        id: '',
-        email: appContent?.applicationUserDataSetting.applicationUserData.userProfile.email || '',
-        token: appContent?.applicationUserDataSetting.applicationUserData.authToken.accessToken || '',
-        originalText: '',
-        fromLanguage: '',
-        translatedText: '',
-        toLanguage: '',
-        dayUtc: '',
+      id: '',
+      email: appContent?.applicationUserDataSetting.applicationUserData.userProfile.email || '',
+      token: appContent?.applicationUserDataSetting.applicationUserData.authToken.accessToken || '',
+      originalText: '',
+      fromLanguage: '',
+      translatedText: '',
+      toLanguage: '',
+      dayUtc: '',
+      createdAtUtc: '',
+      createdByUserId: userId,
     };
     setCreateRecord(newRecordManual);
-};
+  };
 
   const createFormData = (data: any) => {
     const formData = new FormData();
@@ -99,10 +127,10 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       contentType: 'multipart/form-data',
       beforeSend: () => console.log('Fetching record count...'),
       success: (response: any) => {
-        const count  = parseInt(response.count || "0",10);
+        const count = parseInt(response.count || "0", 10);
 
         // Add fallback to avoid NaN
-        const safeCount = isNaN(count) ? 0 : count; 
+        const safeCount = isNaN(count) ? 0 : count;
         const safePageSize = isNaN(pageSize) || pageSize <= 0 ? 1 : pageSize;
 
         // Calculate pages
@@ -110,7 +138,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
 
         setTotalRecords(count);
         setTotalPages(countPage); // Calculate total pages
-        if(currentPage>countPage){
+        if (currentPage > countPage) {
           setCurrentPage(countPage)
           fetchTranslationRecords(countPage, pageSize);
         }
@@ -172,7 +200,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         // Refetch data (staying on same page or resetting to page 1)
         fetchTranslationRecordCount();
         fetchTranslationRecords(currentPage, pageSize);
-        
+
       },
       error: (err: any) => console.error('Error deleting record:', err),
       complete: () => {
@@ -199,7 +227,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       success: () => {
         alert('Record updated successfully.');
         fetchTranslationRecordCount();
-        
+
         // Refetch data
         fetchTranslationRecords(currentPage, pageSize);
       },
@@ -214,7 +242,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
 
   const createEditedRecord = async (updatedRecord: any) => {
     setLoading(true);
-    var record_json={ email, token, ...updatedRecord }
+    var record_json = { email, token, ...updatedRecord }
     delete record_json.id;
     const data = createFormData(record_json);
     const ajaxConfig: AjaxConfig = {
@@ -237,18 +265,266 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     AjaxHandler.getInstance().sendRequest(ajaxConfig);
   };
 
-  const lang_json=[
+  const lang_json = [
     {
-       "id":"072d2631-534e-974b-b4c7-bf889a3bad77",
-       "language_name":"English",
-       "language_code":"en"
+      "id": "072d2631-534e-974b-b4c7-bf889a3bad77",
+      "language_name": "English",
+      "language_code": "en"
     },
     {
-       "id":"6545633f-534e-545g-b4c7-bf889a3bad77",
-       "language_name":"Chinese",
-       "language_code":"zh"
+      "id": "6545633f-534e-545g-b4c7-bf889a3bad77",
+      "language_name": "Chinese",
+      "language_code": "zh"
     }
-]
+  ]
+
+
+
+  const datasource_columns: any = [
+    {
+      title: '',
+      field: 'id',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: false,
+          required: true,
+
+        },
+        "create": {
+          visible: false,
+          required: false,
+          type: {
+            "component": "Input",
+            "type": "hidden"
+          }
+        },
+        "update": {
+          visible: false,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "hidden"
+          }
+        }
+      }
+    },
+    {
+      title: 'Original Text',
+      field: 'originalText',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: true,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "text"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "text"
+          }
+        }
+      }
+
+    },
+    {
+      title: 'From Language',
+      field: 'fromLanguage',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: true,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Dropdownlist",
+            "type": "text",
+            "dataSource": lang_json,
+            "dataTextField": "language_name",
+            "dataTextValue": "language_code"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Dropdownlist",
+            "type": "text",
+            "dataSource": lang_json,
+            "dataTextField": "language_name",
+            "dataTextValue": "language_code"
+          }
+        }
+      }
+    },
+    {
+      title: 'Translated Text',
+      field: 'translatedText',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "text"
+          }
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "text"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "text"
+          }
+        }
+      }
+    },
+    {
+      title: 'To Language',
+      field: 'toLanguage',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: true,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Dropdownlist",
+            "type": "text",
+            "dataSource": lang_json,
+            "dataTextField": "language_name",
+            "dataTextValue": "language_code"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Dropdownlist",
+            "type": "text",
+            "dataSource": lang_json,
+            "dataTextField": "language_name",
+            "dataTextValue": "language_code"
+          }
+        }
+      }
+    },
+    {
+      title: 'Date (UTC)',
+      field: 'dayUtc',
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: true,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Datepicker",
+            "pattern": "YYYY-MM-DD"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Datepicker",
+            "pattern": "YYYY-MM-DD"
+          }
+        }
+      }
+    },
+    {
+      title: '',
+      field: 'createdAtUtc',
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: false,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: false,
+          type: {
+            "component": "Input",
+            "type": "hidden"
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "hidden"
+          }
+        }
+      }
+    },
+    {
+      title: '',
+      field: 'createdByUserId',
+      sorter: 'string' as const,
+      value: null,
+      mode: {
+        "retrieve": {
+          visible: false,
+          required: true,
+        },
+        "create": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "hidden",
+            "value": userId
+          }
+        },
+        "update": {
+          visible: true,
+          required: true,
+          type: {
+            "component": "Input",
+            "type": "hidden",
+            "value": userId
+          }
+        }
+      }
+    }
+  ]
+
 
   /**
    * Tabulator columns.
@@ -256,70 +532,122 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
    * - We use a `formatter`/`cellClick` approach to replicate your "Actions" column.
    * - For filtering/sorting, Tabulator uses `headerFilter` (if desired) and `sorter` properties.
    */
-  const columns = [
-  {
-    title: 'Original Text',
-    field: 'originalText',
-    sorter: 'string' as const, // Ensures proper casting for literal type
-    visible: true,  // This hides the column
-  },
-  {
-    title: 'From Language',
-    field: 'fromLanguage',
-    sorter: 'string' as const,
-    visible: true,  // This hides the column
-  },
-  {
-    title: 'Translated Text',
-    field: 'translatedText',
-    sorter: 'string' as const,
-    visible: true,  // This hides the column
-  },
-  {
-    title: 'To Language',
-    field: 'toLanguage',
-    sorter: 'string' as const,
-    visible: true,  // This hides the column
-  },
-  {
-    title: 'Date (UTC)',
-    field: 'dayUtc',
-    visible: true,  // This hides the column
-  },
-  {
-    title: 'Created AT (UTC)',
-    field: 'createdAtUtc',
-    visible: false,  // This hides the column
-  },
-  {
-    title: 'User Id',
-    field: 'createdByUserId',
-    sorter: 'string' as const,
-    visible: false,  // This hides the column
-  },
-  {
-    title: 'Actions',
-    field: 'id',
-    formatter: () => {
-      return `
+
+  function getGridColumns(
+    datasource_columns: DataSourceColumn[],
+    tabulator_columns: string,
+    mode: string
+  ): ColumnDefinition[] {
+    return datasource_columns.map(column => {
+      return {
+        title: column.title,
+        field: column.field,
+        sorter: column.sorter, // Keep sorter if it exists
+        visible: column.mode[mode]?.visible || false, // Use the visibility for the given mode
+      };
+    });
+  }
+
+
+  // Example usage:
+  const tabulator_columns = "tabulator_columns";
+  const mode = "retrieve";
+
+  const columns: ColumnDefinition[] = [
+    ...getGridColumns(datasource_columns, tabulator_columns, mode),
+    {
+      title: 'Actions',
+      field: 'id',
+      formatter: () => `
+        <button class="edit-button">Edit</button>
+        <span style="margin: 0 8px;"></span>
+        <button class="delete-button">Delete</button>
+      `,
+      cellClick: (e: any, cell: any) => {
+        const rowData = cell.getRow().getData();
+        if (e.target.classList.contains('edit-button')) {
+          setEditRecord(rowData);
+        } else if (e.target.classList.contains('delete-button')) {
+          setDeleteRecordId(rowData.id);
+          setShowConfirmDialog(true);
+        }
+      },
+    },
+  ];
+
+
+
+
+  const columns2 = [
+    {
+      title: 'Id',
+      field: 'id',
+      sorter: 'string' as const, // Ensures proper casting for literal type
+      visible: false,
+    },
+    {
+      title: 'Original Text',
+      field: 'originalText',
+      sorter: 'string' as const, // Ensures proper casting for literal type
+      visible: true,
+    },
+    {
+      title: 'From Language',
+      field: 'fromLanguage',
+      sorter: 'string' as const,
+      visible: true,
+    },
+    {
+      title: 'Translated Text',
+      field: 'translatedText',
+      sorter: 'string' as const,
+      visible: true,
+    },
+    {
+      title: 'To Language',
+      field: 'toLanguage',
+      sorter: 'string' as const,
+      visible: true,
+    },
+    {
+      title: 'Date (UTC)',
+      field: 'dayUtc',
+      visible: true,
+    },
+    {
+      title: 'Created AT (UTC)',
+      field: 'createdAtUtc',
+      visible: false,
+    },
+    {
+      title: 'User Id',
+      field: 'createdByUserId',
+      sorter: 'string' as const,
+      visible: false,
+    },
+    {
+      title: 'Actions',
+      field: 'id',
+      formatter: () => {
+        return `
         <button class="edit-button">Edit</button>
         <span style="margin: 0 8px;"></span>
         <button class="delete-button">Delete</button>
       `;
-    },
-    cellClick: (e: any, cell: any) => {
-      const rowData = cell.getRow().getData();
-      if (e.target.classList.contains('edit-button')) {
-        setEditRecord(rowData);
-      } else if (e.target.classList.contains('delete-button')) {
-        setDeleteRecordId(rowData.id);
-        setShowConfirmDialog(true);
+      },
+      cellClick: (e: any, cell: any) => {
+        const rowData = cell.getRow().getData();
+        if (e.target.classList.contains('edit-button')) {
+          setEditRecord(rowData);
+        } else if (e.target.classList.contains('delete-button')) {
+          setDeleteRecordId(rowData.id);
+          setShowConfirmDialog(true);
+        }
       }
-    }
-  },
-];
+    },
+  ];
 
-  
+
 
   return (
     <div style={{ width: '100%' }}>
@@ -332,18 +660,18 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         Add New Record
       </button>
 
-      
 
-      <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200" style={{ height: 'auto', width: '100%' }}>
-  <ReactTabulator
-    data={rowData}
-    columns={columns}
-    layout="fitColumns"
-    options={{
-      responsiveLayout: 'false',
-    }}
-  />
-</div>
+
+      <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200" style={{ height: 'auto', width: '100%',position: 'relative', zIndex: 1  }}>
+        <ReactTabulator
+          data={rowData}
+          columns={columns as TabulatorColumnDefinition[]}
+          layout="fitColumns"
+          options={{
+            responsiveLayout: 'false',
+          }}
+        />
+      </div>
 
 
 
@@ -379,6 +707,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
           message="Are you sure you want to delete this record?"
           onConfirm={confirmDelete}
           onCancel={() => setShowConfirmDialog(false)}
+          
         />
       )}
 
@@ -387,14 +716,18 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
           record={editRecord}
           onSave={saveEditedRecord}
           onCancel={() => setEditRecord(null)}
+          datasource_columns={datasource_columns}
+          mode='update'
         />
       )}
 
-     {createRecord && (
+      {createRecord && (
         <EditModalComponent
           record={createRecord}
           onSave={createEditedRecord}
           onCancel={() => setCreateRecord(null)}
+          datasource_columns={datasource_columns}
+          mode='create'
         />
       )}
     </div>

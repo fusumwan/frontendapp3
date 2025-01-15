@@ -55,9 +55,9 @@ const StickyHeaderMenuComponent: React.FC<ComponentProps> = ({appContent}) => {
                                     {menu.title}
                                 </button>
                                 {hasChildren && openDropdown === menu.child_id && (
-                                    <div
+                                    <div style={{ position: 'absolute', zIndex: 1050 }}
                                         className="absolute top-full mt-3 bg-gray-700 text-white rounded shadow-lg"
-                                        onMouseLeave={() => handleMouseOut(menu.child_id)}
+                                        onMouseLeave={() => handleMouseOut(menu.child_id) }
                                     >
                                         {childMenu.map((child: any) => (
                                             <button
@@ -95,7 +95,7 @@ const StickyHeaderMenuComponent: React.FC<ComponentProps> = ({appContent}) => {
                 </button>
             </div>
             {isMobileMenuOpen && (
-                <nav className="md:hidden bg-gray-700">
+                <nav className="md:hidden bg-gray-700" >
                     {rootMenu.map((menu: any) => {
                         const childMenu = getChildMenu(menu.child_id);
                         const hasChildren = childMenu.length > 0;
@@ -109,7 +109,7 @@ const StickyHeaderMenuComponent: React.FC<ComponentProps> = ({appContent}) => {
                                     {menu.title}
                                 </button>
                                 {hasChildren && openDropdown === menu.child_id && (
-                                    <div className="pl-4">
+                                    <div className="pl-4" style={{ position: 'absolute', zIndex: 1050 }}>
                                         {childMenu.map((child: any) => (
                                             <button
                                                 key={child.child_id}

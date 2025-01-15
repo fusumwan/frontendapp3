@@ -1,10 +1,10 @@
 import React, { useState,useEffect } from "react";
-import Modal from "../../../shared/Modal";
-import Input from "../../../shared/Input";
-import Button from "../../../shared/Button";
-import Datepicker from "../../../shared/Datepicker";
-import Dropdownlist from "../../../shared/Dropdownlist";
-import { TranslationRecord } from "../../../../interfaces/ComponentProps/TranslationRecord";
+import Modal from "./Modal";
+import Input from "./Input";
+import Button from "./Button";
+import Datepicker from "./Datepicker";
+import Dropdownlist from "./Dropdownlist";
+import { TranslationRecord } from "../../../interfaces/ComponentProps/TranslationRecord";
 
 interface DataSourceColumn {
   title: string;
@@ -28,7 +28,7 @@ interface DataSourceColumn {
   };
 }
 
-interface EditModalComponentProps {
+interface FromViewProps {
   record: TranslationRecord;
   onCancel: () => void;
   onSave: (updatedRecord: TranslationRecord) => void;
@@ -36,7 +36,7 @@ interface EditModalComponentProps {
   mode?: string; // Mode like "update" or "create"
 }
 
-const EditModalComponent: React.FC<EditModalComponentProps> = ({
+const FromView: React.FC<FromViewProps> = ({
   record,
   onCancel,
   onSave,
@@ -155,4 +155,4 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
   );
 };
 
-export default EditModalComponent;
+export default FromView;
