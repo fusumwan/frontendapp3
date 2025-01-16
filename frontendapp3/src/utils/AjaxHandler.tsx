@@ -27,35 +27,86 @@ export class AjaxHandler {
 
   public getDomain(): string {
     const currentUrl = window.location.href;
-    const REACT_APP_FRONTEND_PRO_API_URL=process.env.REACT_APP_FRONTEND_PRO_API_URL;
-    const REACT_APP_FRONTEND_PRO_API_PORT=process.env.REACT_APP_FRONTEND_PRO_API_PORT;
-    const REACT_APP_FRONTEND_DEV_API_URL=process.env.REACT_APP_FRONTEND_DEV_API_URL;
-    const REACT_APP_FRONTEND_DEV_API_PORT=process.env.REACT_APP_FRONTEND_DEV_API_PORT;
-    
-    const REACT_APP_BACKEND_PRO_API_URL=process.env.REACT_APP_BACKEND_PRO_API_URL;
-    const REACT_APP_BACKEND_PRO_API_PORT=process.env.REACT_APP_BACKEND_PRO_API_PORT;
-    const REACT_APP_BACKEND_DEV_API_URL=process.env.REACT_APP_BACKEND_DEV_API_URL;
-    const REACT_APP_BACKEND_DEV_API_PORT=process.env.REACT_APP_BACKEND_DEV_API_PORT;
+    const REACT_APP_FRONTEND_PRO_API_URL = process.env.REACT_APP_FRONTEND_PRO_API_URL;
+    const REACT_APP_FRONTEND_PRO_API_PORT = process.env.REACT_APP_FRONTEND_PRO_API_PORT;
+    const REACT_APP_FRONTEND_DEV_API_URL = process.env.REACT_APP_FRONTEND_DEV_API_URL;
+    const REACT_APP_FRONTEND_DEV_API_PORT = process.env.REACT_APP_FRONTEND_DEV_API_PORT;
+
+    const REACT_APP_BACKEND_PRO_API_URL = process.env.REACT_APP_BACKEND_PRO_API_URL;
+    const REACT_APP_BACKEND_PRO_API_PORT = process.env.REACT_APP_BACKEND_PRO_API_PORT;
+    const REACT_APP_BACKEND_DEV_API_URL = process.env.REACT_APP_BACKEND_DEV_API_URL;
+    const REACT_APP_BACKEND_DEV_API_PORT = process.env.REACT_APP_BACKEND_DEV_API_PORT;
 
     const isProduction = Boolean(
-      REACT_APP_FRONTEND_PRO_API_URL && 
-        (currentUrl.includes(REACT_APP_FRONTEND_PRO_API_URL) || currentUrl==REACT_APP_FRONTEND_PRO_API_URL)
+      REACT_APP_FRONTEND_PRO_API_URL &&
+      (currentUrl.includes(REACT_APP_FRONTEND_PRO_API_URL) || currentUrl == REACT_APP_FRONTEND_PRO_API_URL)
     );
 
 
 
     const protocol = process.env.REACT_APP_IS_HTTPS === 'true' ? 'https' : 'http';
     const domain = isProduction
-        ? `${REACT_APP_BACKEND_PRO_API_URL || ''}${((REACT_APP_BACKEND_PRO_API_PORT==='NONE')?'':':'+REACT_APP_BACKEND_PRO_API_PORT) || ''}`
-        : `${REACT_APP_BACKEND_DEV_API_URL || ''}${((REACT_APP_BACKEND_DEV_API_PORT==='NONE')?'':':'+REACT_APP_BACKEND_DEV_API_PORT) || ''}`;
+      ? `${REACT_APP_BACKEND_PRO_API_URL || ''}${((REACT_APP_BACKEND_PRO_API_PORT === 'NONE') ? '' : ':' + REACT_APP_BACKEND_PRO_API_PORT) || ''}`
+      : `${REACT_APP_BACKEND_DEV_API_URL || ''}${((REACT_APP_BACKEND_DEV_API_PORT === 'NONE') ? '' : ':' + REACT_APP_BACKEND_DEV_API_PORT) || ''}`;
 
     if (!domain || domain.includes('undefined')) {
-        console.warn('Domain URL or Port is not properly defined in environment variables.');
-        return '';
+      console.warn('Domain URL or Port is not properly defined in environment variables.');
+      return '';
     }
 
     return `${protocol}://${domain}`;
-}
+  }
+
+  public async sendRequestAsync(config: AjaxConfig): Promise<any> {
+    const {
+      url,
+      method,
+      contentType = 'application/json',
+      data,
+      beforeSend,
+      success,
+      error,
+      complete,
+    } = config;
+
+    try {
+      if (beforeSend) beforeSend();
+
+      const axiosConfig: AxiosRequestConfig = {
+        url,
+        method,
+        headers: { 'Content-Type': contentType },
+        data,
+      };
+
+      const response = await axios(axiosConfig);
+
+      if (success) success(response.data);
+      return response.data;
+    } catch (err) {
+      if (error) error(err);
+      throw err;  // or handle in some other way
+    } finally {
+      if (complete) complete();
+    }
+  }
+
+  /*
+  // Example usage in an async function or useEffect hook:
+  try {
+    const data = await AjaxHandler.getInstance().sendRequestAsync({
+      url: '/api/something',
+      method: 'GET',
+      success: () => console.log('Request successful'),
+      error: () => console.log('Request error'),
+      complete: () => console.log('Request completed'),
+    });
+    console.log('Response data:', data);
+  } catch (error) {
+    console.error('Caught error:', error);
+  }
+  */
+
 
 
   public sendRequest(config: AjaxConfig): void {

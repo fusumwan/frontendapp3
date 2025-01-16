@@ -1,10 +1,9 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "../../../shared/Modal";
 import Input from "../../../shared/Input";
 import Button from "../../../shared/Button";
 import Datepicker from "../../../shared/Datepicker";
 import Dropdownlist from "../../../shared/Dropdownlist";
-import { TranslationRecord } from "../../../../interfaces/ComponentProps/TranslationRecord";
 
 interface DataSourceColumn {
   title: string;
@@ -28,52 +27,40 @@ interface DataSourceColumn {
   };
 }
 
-interface EditModalComponentProps {
-  record: TranslationRecord;
+interface EditModalComponentProps<T> {
+  record: T;
   onCancel: () => void;
-  onSave: (updatedRecord: TranslationRecord) => void;
+  onSave: (updatedRecord: T) => void;
   datasource_columns?: DataSourceColumn[];
-  mode?: string; // Mode like "update" or "create"
+  mode?: string; // "update" or "create"
 }
 
-const EditModalComponent: React.FC<EditModalComponentProps> = ({
+const EditModalComponent = <T extends Record<string, any>>({
   record,
   onCancel,
   onSave,
   datasource_columns = [],
   mode = "update",
-}) => {
-  const [formData, setFormData] = useState<TranslationRecord>({ ...record });
+}: EditModalComponentProps<T>) => {
+  const [formData, setFormData] = useState<T>({ ...record });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-
-
-  const handleChange = (
-    field: string,
-    value: string | number | boolean | null
-  ) => {
+  const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const getFieldValue = (field: string): string  => {
-    // Convert formData to JSON
-    const formDataJson = JSON.parse(JSON.stringify(formData));
-        
-    // Retrieve the value for the given field
-    return formDataJson[field] || null;
+  const getFieldValue = (field: string): string => {
+    return (formData[field] || "").toString();
   };
-  
 
   const handleSave = () => {
     const missingFields = datasource_columns
-      .filter((col) => (col.mode[mode]?.required || false ) && !getFieldValue(col.field))
+      .filter((col) => col.mode[mode]?.required && !getFieldValue(col.field))
       .map((col) => col.title);
 
     if (missingFields.length > 0) {
       setErrorMessage(
-        `Please fill in the following required fields: ${missingFields.join(
-          ", "
-        )}`
+        `Please fill in the following required fields: ${missingFields.join(", ")}`
       );
       return;
     }
@@ -83,9 +70,9 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
   };
 
   const renderComponent = (column: DataSourceColumn) => {
-    const field:string = column.field || '';
-    const title:string = column.title || '';
-    const componentType:string = column.mode[mode]?.type?.component || '';
+    const field = column.field;
+    const title = column.title;
+    const componentType = column.mode[mode]?.type?.component;
 
     switch (componentType) {
       case "Input":
@@ -94,7 +81,7 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
             key={field}
             label={title}
             name={field}
-            value={getFieldValue(field) || ""}
+            value={getFieldValue(field)}
             onChange={(e) => handleChange(field, e.target.value)}
             type={column.mode[mode]?.type?.type || "text"}
           />
@@ -110,7 +97,7 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
             dataSource={column.mode[mode]?.type?.dataSource || []}
             dataTextField={column.mode[mode]?.type?.dataTextField || ""}
             dataTextValue={column.mode[mode]?.type?.dataTextValue || ""}
-            selectedValue={getFieldValue(field) || ""}
+            selectedValue={getFieldValue(field)}
           />
         );
 
@@ -120,7 +107,7 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
             key={field}
             label={title}
             name={field}
-            value={getFieldValue(field) || ""}
+            value={getFieldValue(field)}
             onChange={(e) => handleChange(field, e.target.value)}
             pattern={column.mode[mode]?.type?.pattern || "YYYY-MM-DD"}
           />
@@ -132,11 +119,7 @@ const EditModalComponent: React.FC<EditModalComponentProps> = ({
   };
 
   return (
-    <Modal
-      title="Form"
-      isOpen={true}
-      onClose={onCancel}
-    >
+    <Modal title="Form" isOpen={true} onClose={onCancel}>
       <div>
         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
         {datasource_columns

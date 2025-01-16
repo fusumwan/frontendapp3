@@ -143,4 +143,4 @@ git fetch origin && git reset --hard origin/main && git pull --force origin main
 
 =========================================
 below is container image url
-docker.io/timothyfudocker/frontendapp:v1.01
+docker.io/timothyfudocker/frontendapp:v1.02

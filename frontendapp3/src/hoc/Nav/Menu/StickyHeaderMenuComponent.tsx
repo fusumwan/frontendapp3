@@ -109,7 +109,7 @@ const StickyHeaderMenuComponent: React.FC<ComponentProps> = ({appContent}) => {
                                     {menu.title}
                                 </button>
                                 {hasChildren && openDropdown === menu.child_id && (
-                                    <div className="pl-4" style={{ position: 'absolute', zIndex: 1050 }}>
+                                    <div className="pl-4" >
                                         {childMenu.map((child: any) => (
                                             <button
                                                 key={child.child_id}
