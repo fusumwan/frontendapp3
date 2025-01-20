@@ -136,6 +136,21 @@
                 "permissions": [
                     "add_record"
                 ]
+            },
+            {
+                "root_id": "service",
+                "child_id": "translationRecordWithSoundmanagementComponent",
+                "title": "Record With Sound Management",
+                "type": "child",
+                "login_required": true,
+                "absolute_path": "components/pages/service/TranslationRecordWithSoundManagement/TranslationRecordWithSoundManagementComponent",
+                "role": [
+                    "Manager",
+                    "Admin"
+                ],
+                "permissions": [
+                    "add_record"
+                ]
             }
         ]
     }

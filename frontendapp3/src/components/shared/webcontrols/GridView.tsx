@@ -15,19 +15,21 @@ import ObjectDataSource from './ObjectDataSource';
 type ColumnDefinition = TabulatorColumnDefinition;
 
 // Define the type for datasource_columns
+// Define the type for datasource_columns
+// Define the type for datasource_columns
 interface DataSourceColumn {
   title: string;
   field: string;
   sorter?: "string" | "number";
-  value?: string;
+  value?: string | any;
   mode: {
     [key: string]: {
       visible: boolean;
       required?: boolean;
-      type?: {
+      ele?: {
         component: string;
-        type: string;
-        dataSource?: any[];
+        type?: string;
+        dataSource?: any[] | null;
         dataTextField?: string;
         dataTextValue?: string;
         pattern?: string;

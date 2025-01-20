@@ -12,15 +12,15 @@ interface DataSourceColumn {
   title: string;
   field: string;
   sorter?: "string" | "number";
-  value?: string;
+  value?: string | any;
   mode: {
     [key: string]: {
       visible: boolean;
       required?: boolean;
-      type?: {
+      ele?: {
         component: string;
-        type: string;
-        dataSource?: any[];
+        type?: string;
+        dataSource?: any[] | null;
         dataTextField?: string;
         dataTextValue?: string;
         pattern?: string;
@@ -29,7 +29,6 @@ interface DataSourceColumn {
     };
   };
 }
-
 
 
 interface filterItem {
@@ -68,8 +67,8 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       "language_code": "zh"
     }
   ]
-  
-  const datasource_columns: any = [
+
+  const datasource_columns: DataSourceColumn[] = [
     {
       title: '',
       field: 'id',
@@ -84,7 +83,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: false,
           required: false,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden"
           }
@@ -92,7 +91,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: false,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden"
           }
@@ -112,7 +111,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "text"
           }
@@ -120,7 +119,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "text"
           }
@@ -141,7 +140,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Dropdownlist",
             "type": "text",
             "dataSource": lang_json,
@@ -152,7 +151,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Dropdownlist",
             "type": "text",
             "dataSource": lang_json,
@@ -171,7 +170,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "retrieve": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "text"
           }
@@ -179,7 +178,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "text"
           }
@@ -187,7 +186,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "text"
           }
@@ -207,7 +206,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Dropdownlist",
             "type": "text",
             "dataSource": lang_json,
@@ -218,7 +217,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Dropdownlist",
             "type": "text",
             "dataSource": lang_json,
@@ -240,7 +239,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Datepicker",
             "pattern": "YYYY-MM-DD"
           }
@@ -248,7 +247,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Datepicker",
             "pattern": "YYYY-MM-DD"
           }
@@ -267,7 +266,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: false,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden"
           }
@@ -275,7 +274,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden"
           }
@@ -295,7 +294,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "create": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden",
             "value": userId
@@ -304,7 +303,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
         "update": {
           visible: true,
           required: true,
-          type: {
+          ele: {
             "component": "Input",
             "type": "hidden",
             "value": userId
@@ -313,13 +312,17 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       }
     }
   ]
-  
+  const _updateMethodAPI = '/api/TranslationRecordControllerImpl/save-translation-record';
+  const _createMethodAPI = '/api/TranslationRecordControllerImpl/create-translation-record';
+  const _deleteMethodAPI = '/api/TranslationRecordControllerImpl/delete-translation-record';
+  const _selectMethodAPI = '/api/TranslationRecordControllerImpl/get-page-translation-records';
+  const _selectCountMethodAPI = '/api/TranslationRecordControllerImpl/get-translation-record-count';
   useEffect(() => {
-    setUpdateMethodAPI('/api/TranslationRecordControllerImpl/save-translation-record');
-    setCreateMethodAPI('/api/TranslationRecordControllerImpl/create-translation-record');
-    setDeleteMethodAPI('/api/TranslationRecordControllerImpl/delete-translation-record');
-    setSelectMethodAPI('/api/TranslationRecordControllerImpl/get-page-translation-records');
-    setSelectCountMethodAPI('/api/TranslationRecordControllerImpl/get-translation-record-count');
+    setUpdateMethodAPI(_updateMethodAPI);
+    setCreateMethodAPI(_createMethodAPI);
+    setDeleteMethodAPI(_deleteMethodAPI);
+    setSelectMethodAPI(_selectMethodAPI);
+    setSelectCountMethodAPI(_selectCountMethodAPI);
   }, []);
 
   const createFormData = (data: any) => {
@@ -329,27 +332,19 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     });
     return formData;
   };
+
   
-  const createFormData2 = (data: any) => {
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => {
-      const value = data[key];
-      // Check if the value is an object and not null
-      if (typeof value === "object" && value !== null) {
-        const json_str=JSON.stringify(value);
-        formData.append(key, json_str); // Convert object to JSON string
-      } else {
-        formData.append(key, value);
-      }
-    });
-    return formData;
+  const addDefaultFields = (entity: any) => {
+    return {
+      ...entity,
+      email: email || '',
+      token: token || '',
+    };
   };
 
   const CreateNewEntity = async () => {
     const newEntity = {
       id: '',
-      email: email || '',
-      token: token || '',
       originalText: '',
       fromLanguage: '',
       translatedText: '',
@@ -358,16 +353,17 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       createdAtUtc: '',
       createdByUserId: userId
     };
-    return newEntity;
- }
- 
- const CreateMethod = async (updatedRecord: any) => {
+    return addDefaultFields(newEntity);
+  };
+
+
+  const CreateMethod = async (updatedRecord: any) => {
     setLoading(true);
     var record_json = { email, token, ...updatedRecord }
     delete record_json.id;
     const data = createFormData(record_json);
     const ajaxConfig: AjaxConfig = {
-      url: `${domain}/api/TranslationRecordControllerImpl/create-translation-record`,
+      url: `${domain}${_createMethodAPI}`,
       method: 'POST',
       data,
       contentType: 'multipart/form-data',
@@ -396,7 +392,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     const data = createFormData({ email, token, id: id });
 
     const ajaxConfig: AjaxConfig = {
-      url: `${domain}/api/TranslationRecordControllerImpl/delete-translation-record`,
+      url: `${domain}${_deleteMethodAPI}`,
       method: 'POST',
       data,
       contentType: 'multipart/form-data',
@@ -414,24 +410,24 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     return result;
   };
   const UpdateMethod = async (updatedRecord: any) => {
-      setLoading(true);
-      const data = createFormData({ email, token, ...updatedRecord });
-      const ajaxConfig: AjaxConfig = {
-        url: `${domain}/api/TranslationRecordControllerImpl/save-translation-record`,
-        method: 'POST',
-        data,
-        contentType: 'multipart/form-data',
-        success: (response: any) => {
-          alert('Record updated successfully.');
-        },
-        error: (err: any) => console.error('Error updating record:', err),
-        complete: () => {
-          setLoading(false);
-        },
-      };
-      const result = await AjaxHandler.getInstance().sendRequestAsync(ajaxConfig);
-      return result;
+    setLoading(true);
+    const data = createFormData({ email, token, ...updatedRecord });
+    const ajaxConfig: AjaxConfig = {
+      url: `${domain}${_updateMethodAPI}`,
+      method: 'POST',
+      data,
+      contentType: 'multipart/form-data',
+      success: (response: any) => {
+        alert('Record updated successfully.');
+      },
+      error: (err: any) => console.error('Error updating record:', err),
+      complete: () => {
+        setLoading(false);
+      },
     };
+    const result = await AjaxHandler.getInstance().sendRequestAsync(ajaxConfig);
+    return result;
+  };
 
   const SelectMethod = async (filter?: Partial<filterItem>): Promise<any[]> => {
     const page = filter?.items?.["page"]?.value ?? 1; // Default to 1 if undefined
@@ -442,7 +438,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
       token,
       page,
       pageSize,
-      filterByColumns:JSON.stringify([
+      filterByColumns: JSON.stringify([
         {
           columnName: 'CreatedByUserId',
           filterValue: userId,
@@ -452,7 +448,8 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
     });
 
     const ajaxConfig: AjaxConfig = {
-      url: `${domain}/api/TranslationRecordControllerImpl/get-page-translation-records`,
+      //url: `${domain}${selectMethodAPI}`,
+      url: `${domain}${_selectMethodAPI}`,
       method: 'POST',
       data,
       contentType: 'multipart/form-data',
@@ -469,7 +466,7 @@ const TranslationRecordManagementComponent: React.FC<ComponentProps> = ({ appCon
 
   const SelectCountMethod = async (filter?: Partial<filterItem>): Promise<number> => {
     const ajaxConfig: AjaxConfig = {
-      url: `${domain}/api/TranslationRecordControllerImpl/get-translation-record-count`,
+      url: `${domain}${_selectCountMethodAPI}`,
       method: 'POST',
       data: new FormData(), // Using FormData for [FromForm]
       contentType: 'multipart/form-data',

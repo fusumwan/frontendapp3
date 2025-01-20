@@ -5,19 +5,20 @@ import Button from "../../shared/Button";
 import Datepicker from "../../shared/Datepicker";
 import Dropdownlist from "../../shared/Dropdownlist";
 
+// Define the type for datasource_columns
 interface DataSourceColumn {
   title: string;
   field: string;
   sorter?: "string" | "number";
-  value?: string;
+  value?: string | any;
   mode: {
     [key: string]: {
       visible: boolean;
       required?: boolean;
-      type?: {
+      ele?: {
         component: string;
-        type: string;
-        dataSource?: any[];
+        type?: string;
+        dataSource?: any[] | null;
         dataTextField?: string;
         dataTextValue?: string;
         pattern?: string;
@@ -72,9 +73,9 @@ const FromView = <T extends Record<string, any>>({
   const renderComponent = (column: DataSourceColumn) => {
     const field = column.field;
     const title = column.title;
-    const componentType = column.mode[mode]?.type?.component;
+    const ele = column.mode[mode]?.ele?.component;
 
-    switch (componentType) {
+    switch (ele) {
       case "Input":
         return (
           <Input
@@ -83,7 +84,7 @@ const FromView = <T extends Record<string, any>>({
             name={field}
             value={getFieldValue(field)}
             onChange={(e) => handleChange(field, e.target.value)}
-            type={column.mode[mode]?.type?.type || "text"}
+            type={column.mode[mode]?.ele?.type || "text"}
           />
         );
 
@@ -94,9 +95,9 @@ const FromView = <T extends Record<string, any>>({
             label={title}
             name={field}
             onChange={(e) => handleChange(field, e.target.value)}
-            dataSource={column.mode[mode]?.type?.dataSource || []}
-            dataTextField={column.mode[mode]?.type?.dataTextField || ""}
-            dataTextValue={column.mode[mode]?.type?.dataTextValue || ""}
+            dataSource={column.mode[mode]?.ele?.dataSource || []}
+            dataTextField={column.mode[mode]?.ele?.dataTextField || ""}
+            dataTextValue={column.mode[mode]?.ele?.dataTextValue || ""}
             selectedValue={getFieldValue(field)}
           />
         );
@@ -109,7 +110,7 @@ const FromView = <T extends Record<string, any>>({
             name={field}
             value={getFieldValue(field)}
             onChange={(e) => handleChange(field, e.target.value)}
-            pattern={column.mode[mode]?.type?.pattern || "YYYY-MM-DD"}
+            pattern={column.mode[mode]?.ele?.pattern || "YYYY-MM-DD"}
           />
         );
 
